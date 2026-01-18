@@ -13,11 +13,10 @@ pipeline {
 
         SCANNER_HOME = tool 'sonar-scanner'
 
-        registryCredential = 'ecr:ap-south-1:awscreds'
-        IMAGE_NAME   = '970378220457.dkr.ecr.ap-south-1.amazonaws.com/flipkartimg'               
-        flipkartRegistry = "https://970378220457.dkr.ecr.ap-south-1.amazonaws.com"
+        //registryCredential = 'ecr:ap-south-1:awscreds'
+        IMAGE_NAME   = '126830716304.dkr.ecr.ap-south-1.amazonaws.com/demo-app'               
+        flipkartRegistry = "https://126830716304.dkr.ecr.ap-south-1.amazonaws.com"
     }
-    
     
     stages {
         stage("Clean Workspace") {
@@ -28,7 +27,7 @@ pipeline {
 
         stage("Git Checkout") {
             steps {
-                git branch: 'main', url: 'https://github.com/harishnshetty/Flipkart-Clone-DevSecops-Terraform-EKS-Harbor-Scout-OWASP-ZAP-Gitops-Hard-Level-project.git'
+                git branch: 'main', url: 'https://github.com/ariphmohd/Flipkart-Clone-DevSecops-EKS-Scout-OWASP-ZAP-Gitops-Hard-Level-project.git'
             }
         }
 
@@ -94,7 +93,7 @@ pipeline {
                     script {
                         withCredentials([string(credentialsId: 'docker-cred', variable: 'dockerpwd')]) {
                             // Login to Docker Hub
-                            sh "docker login -u harishnshetty -p ${dockerpwd}"
+                            sh "docker login -u ariphmohd1993 -p ${dockerpwd}"
 
                             // Generate a quick overview and save it as a text file
                             sh "docker-scout quickview fs://. > quickview-report.txt"
@@ -119,7 +118,7 @@ pipeline {
             steps {
                 script {
 
-                    env.IMAGE_TAG = "harishnshetty/flipkart:${BUILD_NUMBER}"
+                    env.IMAGE_TAG = "ariphmohd1993/flipkart:${BUILD_NUMBER}"
                     
                     // Optional cleanup
                     sh "docker rmi -f flipkart ${env.IMAGE_TAG} || true"
@@ -151,7 +150,7 @@ pipeline {
                 script {
                     withCredentials([string(credentialsId: 'docker-cred', variable: 'dockerpwd')]) {
                         // Login to Docker Hub
-                        sh "docker login -u harishnshetty -p ${dockerpwd}"
+                        sh "docker login -u ariphmohd1993 -p ${dockerpwd}"
 
                         // Run Docker Scout CVE scan and save output
                         // sh "docker-scout cves flipkart --format json > image-cves-report.json"
@@ -203,14 +202,14 @@ pipeline {
             steps {
                 script {
                     withCredentials([string(credentialsId: 'docker-cred', variable: 'dockerpwd')]) {
-                        sh "docker login -u harishnshetty -p ${dockerpwd}"
+                        sh "docker login -u ariphmohd1993 -p ${dockerpwd}"
                         sh "docker tag flipkart ${env.IMAGE_TAG}"
                         sh "docker push ${env.IMAGE_TAG}"
 
                         // Also push latest
-                        sh "docker tag flipkart harishnshetty/flipkart:latest"
+                        sh "docker tag flipkart ariphmohd1993/flipkart:latest"
                         
-                        sh "docker push harishnshetty/flipkart:latest"
+                        sh "docker push ariphmohd1993/flipkart:latest"
                         sh "docker logout"
                     }
                 }
@@ -306,8 +305,8 @@ pipeline {
                     <p>Started by: ${buildUser}</p>
                     <p>Build URL: <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
                 """,
-                to: 'harishn662@gmail.com',
-                from: 'harishn662@gmail.com',
+                to: 'ariphmohd@gmail.com',
+                from: 'ariphmohd@gmail.com',
                 mimeType: 'text/html',
                 attachmentsPattern: 'quickview-report.txt,cves-report.json,cves-report.txt,image-cves-report.json,image-cves-report.txt,image-recommendations.json,image-recommendations.txt,dependency-check-report.xml,zap_report.html,zap_report.json'
                     )  
