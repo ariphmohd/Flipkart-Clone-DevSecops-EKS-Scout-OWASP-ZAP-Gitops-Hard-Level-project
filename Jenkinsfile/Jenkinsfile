@@ -75,17 +75,21 @@ pipeline {
 
 
         stage("OWASP Dependency Check Scan") {
-            steps {
-                dependencyCheck additionalArguments: '''
-                    --scan .
-                    --disableYarnAudit
-                    --disableNodeAudit
-                ''',
-                odcInstallation: 'dp-check'
-
-                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
-            }
+           steps {
+              withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_API_KEY')]) {
+              dependencyCheck additionalArguments: """
+                --scan .
+                --disableYarnAudit
+                --disableNodeAudit
+                --nvdApiKey ${NVD_API_KEY}
+            """,
+            odcInstallation: 'dp-check'
         }
+
+        dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+    }
+}
+
 
         /* =======================
            REPLACED Docker Scout
