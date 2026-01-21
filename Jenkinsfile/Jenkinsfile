@@ -68,27 +68,26 @@ pipeline {
 
         stage("Quality Gate (SKIPPED)") {
            steps {
-           echo "⚠️ Quality Gate check is temporarily skipped to test downstream stages."
-           echo "ℹ️ Sonar analysis has already been submitted successfully."
-    }
-}
+                echo "⚠️ Quality Gate check is temporarily skipped to test downstream stages."
+                echo "ℹ️ Sonar analysis has already been submitted successfully."
+            }
+        }
 
 
         stage("OWASP Dependency Check Scan") {
-           steps {
-              withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_API_KEY')]) {
-              dependencyCheck additionalArguments: """
-                --scan .
-                --disableYarnAudit
-                --disableNodeAudit
-                --nvdApiKey ${NVD_API_KEY}
-            """,
-            odcInstallation: 'dp-check'
+            steps {
+                withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_API_KEY')]) {
+
+                    dependencyCheck(
+                        additionalArguments: "--scan . --disableYarnAudit --disableNodeAudit --nvdApiKey ${NVD_API_KEY}",
+                        odcInstallation: 'dp-check'
+                    )
+                }
+
+                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+            }
         }
 
-        dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
-    }
-}
 
 
         /* =======================
@@ -96,7 +95,7 @@ pipeline {
            WITH TRIVY (ONLY CHANGE)
            ======================= */
 
-        stage("Trivy Filesystem Scan") {
+        stage("Trivy Filesystem Scan") { 
             steps {
                 sh '''
                 docker run --rm \
