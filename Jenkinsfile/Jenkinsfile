@@ -225,6 +225,17 @@ pipeline {
                 )
 
                 // Email Notification
+                def attachments = []
+
+                if (fileExists('dependency-check-report.xml')) {
+                    attachments << 'dependency-check-report.xml'
+                }
+                if (fileExists('zap_report.html')) {
+                    attachments << 'zap_report.html'
+                }
+                if (fileExists('zap_report.json')) {
+                    attachments << 'zap_report.json'
+                }
                 emailext(
                     subject: "Pipeline ${buildStatus}: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                     body: """
@@ -234,15 +245,11 @@ pipeline {
                         <p><b>Status:</b> ${buildStatus}</p>
                         <p><b>Started by:</b> ${buildUser}</p>
                         <p><a href="${buildUrl}">View Build</a></p>
-                    """,
-                    to: 'ariphmohd@gmail.com',
+                        """,
+                to: 'ariphmohd@gmail.com',
                     from: 'ariphmohd@gmail.com',
                     mimeType: 'text/html',
-                    attachmentsPattern: '''
-                        dependency-check-report.xml,
-                        zap_report.html,
-                        zap_report.json
-                    '''
+                    attachmentsPattern: attachments.join(',')
                 )
             }
         }
