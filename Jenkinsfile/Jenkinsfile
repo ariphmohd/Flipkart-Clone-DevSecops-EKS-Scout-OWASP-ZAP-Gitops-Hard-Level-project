@@ -57,21 +57,21 @@ pipeline {
             }
         }
 
-/*       stage("Quality Gate") {
+         stage("Quality Gate") {
             steps {
-                timeout(time: 10, unit: 'MINUTES') {
+                timeout(time: 5, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true,
                                        credentialsId: 'sonar-token'
                 }
             }
-        } */
+        }
 
-        stage("Quality Gate (SKIPPED)") {
+        /*stage("Quality Gate (SKIPPED)") {
            steps {
                 echo "⚠️ Quality Gate check is temporarily skipped to test downstream stages."
                 echo "ℹ️ Sonar analysis has already been submitted successfully."
             }
-        }
+        } */
 
 
         stage("OWASP Dependency Check Scan") {
